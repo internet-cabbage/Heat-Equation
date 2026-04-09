@@ -110,6 +110,13 @@ if selection == 3:
     print(plate)
     thermalDiffusivity = 0.003
 
+# ======================= Scenario 4: Gaussian heat packet
+
+if selection == 4:
+    plate.fill(273)
+    tempRange = (273,340)
+    thermalDiffusivity = 0.003
+
 
 
 
@@ -165,20 +172,32 @@ fig.canvas.mpl_connect('button_press_event',onclick)
 
 
 img = ax.imshow(plate, cmap='hot', animated=True)
+
 plt.colorbar(img)
 
 stepsPerFrame = 30
 time = 0.0
+
+textBox = fig.text(0.5, 0.92, "", ha="center", va="top")
+
+def init():
+    textBox.set_text("")
+    img.set_data(plate)
+    return [img, textBox]
+
+
 def update(frame):
     global time
     for i in range(stepsPerFrame):
         tempChange()
-        time = time + dt
-        print(time)
+    time = time + (dt * stepsPerFrame)
     img.set_data(plate)
-    return [img]
+    timeText = f"Time: {time:.2f}"
+    textBox.set_text(timeText)
 
-animation = FuncAnimation(fig, update, interval=10, blit=True)
+    return [img, textBox]
+
+animation = FuncAnimation(fig, update, init_func = init, interval=10, blit=False)
 plt.show()
 
 
